@@ -1,0 +1,13 @@
+all: server client
+
+server:server.cpp
+	@g++ -o server server.cpp
+	@echo $@ success
+
+client:client.cpp
+	@g++ -o $@ $^ 
+	@echo $@ success
+
+.PHONY:clean
+clean:
+	@rm -f server client
