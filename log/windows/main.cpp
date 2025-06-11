@@ -1,17 +1,27 @@
-﻿#include "log.hpp"
+﻿#pragma once
+#include "log.hpp"
 #include <Windows.h>
+#include "pthread.hpp"
+#include "pthreadpool.hpp"
 
-
+void fun(void)
+{
+	int z = 10;
+	while (z--)
+	{
+		std::cout << z << std::endl;
+		Sleep(1000);
+	}
+}
 int main()
 {
-	DWORD bufferSize = MAX_PATH;
-	std::vector<TCHAR> buffer(bufferSize);
-
-	if (GetCurrentDirectory(bufferSize, buffer.data()) != 0) {
-		std::wcout << L"Current Working Directory: " << std::wstring(buffer.begin(), buffer.end()) << std::endl;
-	}
-
-	LOG(sui::My_level::debug) << "hello world" << "zz " << "tt";
+	sui::my_pthreadpool* a = sui::my_pthreadpool::Get_Pthread_Pool();
+	a->add_task(fun);
+	a->add_task(fun);
+	a->start();
+	Sleep(1000);
+	a->wait_and_join();
+	std::cout << "进行休眠" << std::endl;
 	Sleep(20000);
 	
 	return 0;

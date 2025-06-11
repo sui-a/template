@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _log_hpp_
+#define _log_hpp_
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -36,9 +37,9 @@ namespace sui
 		std::mutex _mutex;
 	};
 
-	std::string default_path = ".\\log";
-	std::string default_file = "log";
-	//
+	const std::string default_path = ".\\log";
+	 std::string default_file = "log";
+	
 	class log_file : public log_basic
 	{
 	public:
@@ -99,7 +100,7 @@ namespace sui
 		afal
 	};
 
-	std::string get_time()
+	 std::string get_time()
 	{
 		std::time_t mt = std::time(nullptr);
 		std::tm local_time;
@@ -114,7 +115,7 @@ namespace sui
 		return time_str;
 	}
 
-	std::string Level_to_str(My_level level)
+	inline std::string Level_to_str(My_level level)
 	{
 		switch (level)
 		{
@@ -132,6 +133,8 @@ namespace sui
 
 		case My_level::afal:
 			return "afal";
+		default:
+			return "unknow";
 		}
 	}
 
@@ -181,7 +184,7 @@ namespace sui
 			}
 
 			template<class T>
-			log_message& operator<<(T& data)
+			log_message& operator<<(const T& data)
 			{
 				std::stringstream ss;
 				ss << data;
@@ -219,10 +222,11 @@ namespace sui
 		log_basic* _ffluent_logg;
 
 	};
-	sui::logger log;
+	inline sui::logger log;
 
 #define LOG(level) sui::log(level, __FILE__, __LINE__)
 #define Enable_Bash_Log() sui::log.Enable_Standard_Logger()
 #define Enable_File_Log() sui::log.Enable_File_Logger()
-
 }
+
+#endif
