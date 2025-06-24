@@ -1,6 +1,7 @@
 #include "NetCal.hpp"
 #include "Protocol.hpp"
 #include "TcpServer.hpp"
+#include "Daemon.hpp"
 #include <memory>
 
 void Usage(std::string proc)
@@ -16,6 +17,14 @@ int main(int argc, char* argv[])
         Usage(argv[0]);
         exit(USAGE_ERR);
     }
+    std::cout << "服务器已经启动，已经是一个守护进程了" << std::endl;
+
+    Daemon(0, 0);
+    // daemon(1, 1);
+
+    // Enable_Console_Log_Strategy();
+    Enable_File_Log_Strategy();
+
 
     // 1. 顶层
     std::unique_ptr<Cal> cal = std::make_unique<Cal>();
@@ -30,8 +39,9 @@ int main(int argc, char* argv[])
         [&protocol](std::shared_ptr<Socket>& sock, InetAddr& client) {
             protocol->GetRequest(sock, client);
         });
-    //实际上是模拟ios的全部过程
+
     tsvr->Start();
+    // sleep(5);
 
     return 0;
 }

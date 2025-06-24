@@ -18,10 +18,10 @@ enum ExitCode
     BIND_ERR,
     LISTEN_ERR,
     CONNECT_ERR,
-    FORK_ERR
+    FORK_ERR,
+    OPEN_ERR
 };
 
-//将此类给其他类继承，可以禁止拷贝构造和赋值操作
 class NoCopy
 {
 public:

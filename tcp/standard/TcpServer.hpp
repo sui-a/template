@@ -10,6 +10,7 @@ using namespace LogModule;
 using ioservice_t = std::function<void(std::shared_ptr<Socket>& sock, InetAddr& client)>;
 
 // 主要解决：连接的问题，IO通信的问题
+// 细节: TcpServer,不需要关心自己未来传递的信息是什么
 // 网络版本的计算器，长服务
 class TcpServer
 {
@@ -32,7 +33,7 @@ public:
             {
                 continue;
             }
-            LOG(LogLevel::DEBUG) << "accept success ...";
+            LOG(LogLevel::DEBUG) << "accept success ..." << client.StringAddr();
 
             // sock && client
             pid_t id = fork();
