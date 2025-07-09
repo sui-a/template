@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二次元幻想乡</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 基础样式 - 蓝白渐变背景 + 圆角元素 [6](@ref) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft Yahei', sans-serif;
+            background: linear-gradient(135deg, #e6f0ff 0%, #ffd6e7 100%);
+            overflow-x: hidden;
+            color: #333;
+        }
+        
+        /* 导航栏 - 悬浮动画效果 [1,7](@ref) */
+        header {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        nav li {
+            margin: 0 20px;
+        }
+        nav a {
+            text-decoration: none;
+            color: #ff6b9e;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        nav a:hover {
+            background: #ff6b9e;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        /* 主视觉区 - 全屏背景图 + 居中文字 [3,7](@ref) */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: url('https://example.com/anime-bg.jpg') no-repeat center/cover;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+        }
+        .hero-content {
+            z-index: 10;
+            color: white;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #ff6b9e;
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+        .btn:hover {
+            background: white;
+            color: #ff6b9e;
+            transform: translateY(-5px);
+        }
+        
+        /* 内容区块 - 卡片式布局 [6](@ref) */
+        .container {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #ff6b9e;
+            font-size: 2.5rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .card-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .feature-card:hover .card-img img {
+            transform: scale(1.1);
+        }
+        .card-content {
+            padding: 20px;
+        }
+        .card-content h3 {
+            color: #ff6b9e;
+            margin-bottom: 10px;
+        }
+        
+        /* 页脚样式 [1](@ref) */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: white;
+            font-size: 24px;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+        .social-links a:hover {
+            color: #ff6b9e;
+        }
+        
+        /* 樱花飘落特效 - 通过JS动态实现 [3,7](@ref) */
+        .sakura {
+            position: fixed;
+            top: -10px;
+            z-index: 999;
+            color: pink;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">首页</a></li>
+                <li><a href="#about">关于</a></li>
+                <li><a href="/gallery">画廊</a></li>
+                <li><a href="#characters">个人</a></li>
+                <li><a href="#contact">联系</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- 主视觉区 -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>欢迎来到二次元世界</h1>
+            <p>这里汇集了最热门的动漫资讯、精美插画和同人创作，让我们一起探索梦幻的ACG宇宙！</p>
+            <a href="#about" class="btn">开始探索</a>
+        </div>
+    </section>
+
+    <!-- 内容区块 -->
+    <div class="container" id="about">
+        <h2 class="section-title">关于我们</h2>
+        <div class="features">
+            <div class="feature-card">
+                <div class="card-img">
+                    <img src="https://example.com/anime1.jpg" alt="动漫资讯">
+                </div>
+                <div class="card-content">
+                    <h3>最新动漫资讯</h3>
+                    <p>第一时间获取日本新番动画、漫画连载和声优情报，涵盖所有热门作品。</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="card-img">
+                    <img src="https://example.com/anime2.jpg" alt="同人创作">
+                </div>
+                <div class="card-content">
+                    <h3>同人创作分享</h3>
+                    <p>展示来自全球画师的精美二次元插画、漫画和Cosplay作品。</p>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="card-img">
+                    <img src="https://example.com/anime3.jpg" alt="资源下载">
+                </div>
+                <div class="card-content">
+                    <h3>资源下载</h3>
+                    <p>提供高清资源</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 画廊区块 -->
+    <div class="container" id="gallery">
+        <h2 class="section-title">精选画廊</h2>
+        <!-- 这里可以通过JS动态加载图片 -->
+    </div>
+
+    <!-- 页脚 -->
+    <footer id="contact">
+        <div class="social-links">
+            <a href="#"><i class="fab fa-bilibili"></i></a>
+            <a href="#"><i class="fab fa-weibo"></i></a>
+            <a href="#"><i class="fab fa-qq"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+        </div>
+        <p>&copy; 2025 二次元幻想乡 - 动漫爱好者社区</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 樱花飘落特效 [3,7](@ref)
+        function createSakura() {
+            const sakura = document.createElement('div');
+            sakura.innerHTML = '❀';
+            sakura.classList.add('sakura');
+            
+            // 随机位置
+            sakura.style.left = Math.random() * window.innerWidth + 'px';
+            
+            // 随机大小
+            const size = Math.random() * 20 + 10;
+            sakura.style.fontSize = size + 'px';
+            
+            // 随机透明度
+            sakura.style.opacity = Math.random() * 0.5 + 0.3;
+            
+            // 随机动画时长
+            const duration = Math.random() * 10 + 5;
+            sakura.style.animationDuration = duration + 's';
+            
+            document.body.appendChild(sakura);
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                sakura.remove();
+            }, duration * 1000);
+        }
+        
+        // 每隔一段时间创建樱花
+        setInterval(createSakura, 300);
+        
+        // 平滑滚动 [1](@ref)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
