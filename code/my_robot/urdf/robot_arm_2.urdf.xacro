@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- 定义可旋转和伸缩的长方体宏 -->
+  <xacro:macro name="square_base_box" params="name parent height base_side *origin">
+    <!-- 属性定义 -->
+    <xacro:property name="mass" value="${base_side * base_side * height * 0.001}" /> <!-- 密度假设为0.001 kg/cm³ -->
+
+    <!-- 中间连杆（用于旋转） -->
+    <link name="${name}_rotation_link">
+      <inertial>
+        <mass value="0.001"/> <!-- 很小的质量 -->
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <!-- 旋转关节（与父连杆连接） -->
+    <joint name="${name}_rotation_joint" type="revolute">
+      <xacro:insert_block name="origin"/> <!-- 通过宏参数传递安装位置 -->
+      <parent link="${parent}"/>
+      <child link="${name}_rotation_link"/>
+      <axis xyz="0 0 1"/> <!-- 绕Z轴旋转 -->
+      <limit effort="100" velocity="0.5" lower="-3.14159" upper="3.14159"/> <!-- 可自由旋转 -->
+      <dynamics damping="0.1"/>
+    </joint>
+
+    <!-- 长方体连杆（实际的可伸缩部分） -->
+    <link name="${name}">
+      <!-- 视觉属性 -->
+      <visual>
+        <geometry>
+          <box size="${base_side} ${base_side} ${height}"/> <!-- 正方形底，高度可调 -->
+        </geometry>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0"/> <!-- 原点位于几何中心 -->
+        <material name="${parent}_box_color">
+          <color rgba="0 0 0.7 1"/>
+        </material>
+      </visual>
+
+       <!-- 添加的碰撞属性（长方体） -->
+      <collision>
+        <geometry>
+          <box size="${base_side} ${base_side} ${height}"/>
+        </geometry>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0"/>
+      </collision>
+
+      <!-- 添加的惯性矩阵（长方体公式） -->
+      <inertial>
+        <mass value="${mass}"/>
+        <inertia 
+          ixx="${mass*(height*height + base_side*base_side)/12}" 
+          ixy="0" 
+          ixz="0"
+          iyy="${mass*(base_side*base_side + base_side*base_side)/12}" 
+          iyz="0"
+          izz="${mass*(base_side*base_side + height*height)/12}"/>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0"/>
+      </inertial>
+    </link>
+
+    <!-- 棱柱关节（沿Z轴伸缩） -->
+    <joint name="${name}_prismatic_joint" type="prismatic">
+      <parent link="${name}_rotation_link"/>
+      <child link="${name}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/> <!-- 连接到旋转连杆 -->
+      <axis xyz="0 0 1"/> <!-- Z轴方向 -->
+      <limit effort="100" velocity="0.5" lower="0" upper="0.2"/> <!-- 伸缩范围为0到高度 -->
+      <dynamics damping="0.1"/>
+    </joint>
+
+    <!-- Gazebo颜色配置（必须添加否则Gazebo中无颜色） -->
+    <gazebo reference="${name}">
+      <material>Gazebo/Blue</material>
+    </gazebo>
+    <gazebo reference="${name}_rotation_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
+  </xacro:macro>
+</robot>

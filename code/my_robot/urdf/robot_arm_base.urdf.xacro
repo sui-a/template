@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 定义正方形模块的宏 -->
+  <xacro:macro name="fixed_square_module" params="module_name side_length height parent *origin">
+    <!-- 1. 定义正方形连杆(link) -->
+    <link name="${module_name}">
+      <visual>
+
+        <geometry>
+          <box size="${side_length} ${side_length} ${height}"/>
+        </geometry>
+
+        <material name="light_red">
+          <color rgba="1 0.6 0.6 1"/>
+        </material>
+
+      </visual>
+
+      <!-- 添加的碰撞属性（与visual几何形状一致） -->
+      <collision>
+        <geometry>
+          <box size="${side_length} ${side_length} ${height}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </collision>
+
+      <!-- 添加的惯性矩阵（长方体公式） -->
+      <inertial>
+        <mass value="0.5"/>  <!-- 默认质量，建议后续通过参数传入 -->
+        <inertia 
+          ixx="${0.5*(height*height + side_length*side_length)/12}" 
+          ixy="0" 
+          ixz="0"
+          iyy="${0.5*(side_length*side_length + side_length*side_length)/12}" 
+          iyz="0"
+          izz="${0.5*(side_length*side_length + height*height)/12}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </inertial>
+    </link>
+
+      <!-- 2. 固定关节(fixed joint)连接到父坐标系 -->
+    <joint name="${module_name}_fixed_joint" type="fixed">
+      <!-- 通过*origin传递位置参数 -->
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${module_name}"/>
+    </joint>
+
+    <!-- Gazebo颜色配置（必须添加否则Gazebo中无颜色） -->
+    <gazebo reference="${module_name}">
+      <material>Gazebo/Orange</material>  <!-- 使用与RVIZ相近的橙色 -->
+    </gazebo>
+
+  </xacro:macro>
+</robot>

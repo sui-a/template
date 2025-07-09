@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- 定义模块宏：可参数化的正方形底长方体柱子 -->
+  <xacro:macro name="square_base_pillar" params="name base_length height parent_link *origin">
+    <!-- 属性定义 -->
+    <xacro:property name="mass" value="1.0" /> <!-- 默认质量 -->
+    <xacro:property name="color_rgba" value="0.7 0.7 0.7 1" /> <!-- 默认灰色材质 -->
+
+    <!-- 连杆定义 -->
+    <link name="${name}">
+      <!-- 视觉属性 -->
+      <visual>
+        <geometry>
+          <box size="${base_length} ${base_length} ${height}" />
+        </geometry>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0" />
+        <material name="${name}_color">
+          <color rgba="${color_rgba}" />
+        </material>
+      </visual>
+
+       <!-- 添加的碰撞属性（长方体） -->
+      <collision>
+        <geometry>
+          <box size="${base_length} ${base_length} ${height}" />
+        </geometry>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0" />
+      </collision>
+
+      <!-- 添加的惯性矩阵（长方体公式） -->
+      <inertial>
+        <mass value="${mass}"/>
+        <inertia 
+          ixx="${mass*(height*height + base_length*base_length)/12}" 
+          ixy="0" 
+          ixz="0"
+          iyy="${mass*(base_length*base_length + base_length*base_length)/12}" 
+          iyz="0"
+          izz="${mass*(base_length*base_length + height*height)/12}"/>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0"/>
+      </inertial>
+
+    </link>
+
+    <!-- 关节定义：绕Y轴旋转（0-180度限制） -->
+    <joint name="${name}_joint" type="revolute">
+      <xacro:insert_block name="origin" /> <!-- 通过宏参数传递安装位置 -->
+      <parent link="${parent_link}" />
+      <child link="${name}" />
+      <axis xyz="0 1 0" /> <!-- Y轴旋转 -->
+      <limit lower="-1.5708" upper="1.5708" effort="100" velocity="1.0"/>
+      <dynamics damping="0.1" />
+    </joint>
+
+     <!-- Gazebo颜色配置（必须添加否则Gazebo中无颜色） -->
+    <gazebo reference="${name}">
+      <material>Gazebo/Grey</material>
+      <mu1>0.5</mu1>  <!-- 摩擦系数1 -->
+      <mu2>0.5</mu2>  <!-- 摩擦系数2 -->
+      <kp>1000000.0</kp>  <!-- 接触刚度 -->
+      <kd>1000.0</kd>  <!-- 接触阻尼 -->
+    </gazebo>
+    
+  </xacro:macro>
+</robot>

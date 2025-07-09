@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="wheel_module" params="radius name width parent_link *origin">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 0" rpy="${math.pi/2} 0 0"/>
+
+        <geometry>
+          <cylinder radius="0.1" length="0.05"/>  <!-- 添加具体参数 -->
+        </geometry>
+
+        <material name="gray">
+          <color rgba="0.5 0.5 0.5 1"/> <!-- 补充颜色定义 -->
+        </material>
+        
+      </visual>
+
+      <!-- 添加的碰撞属性（与visual几何形状一致） -->
+      <collision>
+        <origin xyz="0 0 0" rpy="${math.pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="0.1" length="0.05"/>
+        </geometry>
+      </collision>
+
+      <!-- 添加的惯性矩阵（圆柱体公式） -->
+      <inertial>
+        <mass value="0.5"/>  <!-- 默认质量，建议通过参数传入 -->
+        <inertia 
+          ixx="${0.5*(3 * 0.1 * 0.1 + 0.05 * 0.05)/12}" 
+          ixy="0" 
+          ixz="0"
+          iyy="${0.5*(3 * 0.1 * 0.1 + 0.05 * 0.05)/12}" 
+          iyz="0"
+          izz="${0.5 * 0.1 * 0.1/2}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </inertial>
+    </link>
+
+    
+
+    <joint name="${name}_joint" type="continuous">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+      <axis xyz="0 1 0"/> 
+    </joint>
+
+    <!-- Gazebo颜色配置（必须添加否则Gazebo中无颜色） -->
+    <gazebo reference="${name}">
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

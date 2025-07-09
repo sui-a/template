@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="rectangle_robot" params="robot_name length_para:=0.2 width_para:=0.05 height_para:=0.03 mass_para:=0.5">
+  
+    <!-- 尺寸参数（支持外部传入） -->
+    <xacro:property name="length" value="${length_para}" />
+    <xacro:property name="width"  value="${width_para}" />
+    <xacro:property name="height" value="${height_para}" />
+    <xacro:property name="mass"   value="${mass_para}" />
+
+    <link name="foot_footprint"/>
+
+    <!-- 基础连杆（名称动态生成） -->
+    <link name="${robot_name}">
+      <!-- 视觉外观 -->
+      <visual>
+        <geometry>
+          <box size="${length_para} ${width_para} ${height_para}"/>
+        </geometry>
+        
+        <material name="blue">
+          <color rgba="0 0 0.8 1"/>
+        </material>
+      </visual>
+
+       <!-- 碰撞属性（必须与visual几何形状一致） -->
+      <collision>
+        <geometry>
+          <box size="${length} ${width} ${height}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <!-- Gazebo仿真时碰撞检测会使用此属性 -->
+      </collision>
+      
+      <!-- 精确惯性矩阵 -->
+      <inertial>
+        <mass value="${mass_para}"/>
+        <inertia 
+          ixx="${mass_para*(height_para*height_para + length_para*length_para)/12}" 
+          ixy="0" 
+          ixz="0"
+          iyy="${mass_para*(width_para*width_para + length_para*length_para)/12}" 
+          iyz="0"
+          izz="${mass_para*(width_para*width_para + length_para*length_para)/12}"/>
+      </inertial>
+    </link>
+
+
+    <!-- 连接虚拟部件 -->
+    <joint name="${robot_name}_to_foot_joint_name" type="fixed">
+      <origin xyz="0.0 0.0 0.15" rpy="0.0 0.0 0.0"/>
+      <parent link="foot_footprint"/>
+      <child link="${robot_name}"/>
+    </joint>
+
+     <!-- Gazebo颜色配置（可选） -->
+    <gazebo reference="${robot_name}">
+      <material>Gazebo/Blue</material>
+    </gazebo>
+
+</xacro:macro>
+</robot>

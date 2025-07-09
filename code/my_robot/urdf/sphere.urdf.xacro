@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- 定义球体宏：可参数化的球体链接与固定关节 -->
+  <xacro:macro name="sphere_link" params="name parent radius *origin">
+    <!-- 属性定义 -->
+    <xacro:property name="mass" value="0.1" /> 
+
+    <!-- 球体连杆 -->
+    <link name="${name}">
+      <!-- 视觉属性 -->
+      <visual>
+        <geometry>
+          <sphere radius="${radius}" />
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <material name="${name}_color">
+          <color rgba="0.8 0.8 0.8 1" />
+        </material>
+      </visual>
+
+      <!-- 添加的碰撞属性（与visual几何形状一致） -->
+      <collision>
+        <geometry>
+          <sphere radius="${radius}" />
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </collision>
+
+      <!-- 添加的惯性矩阵（球体公式） -->
+      <inertial>
+        <mass value="${mass}"/>
+        <inertia 
+          ixx="${2*mass*radius*radius/5}" 
+          ixy="0" 
+          ixz="0"
+          iyy="${2*mass*radius*radius/5}" 
+          iyz="0"
+          izz="${2*mass*radius*radius/5}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </inertial>
+    </link>
+
+    <!-- 固定关节 -->
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="${name}" />
+    </joint>
+
+    <!-- Gazebo颜色配置（必须添加否则Gazebo中无颜色） -->
+    <gazebo reference="${name}">
+      <material>Gazebo/Grey</material>
+      <mu1>0.5</mu1>  <!-- 摩擦系数1 -->
+      <mu2>0.5</mu2>  <!-- 摩擦系数2 -->
+      <kp>1000000.0</kp>  <!-- 接触刚度 -->
+      <kd>1000.0</kd>  <!-- 接触阻尼 -->
+    </gazebo>
+    
+  </xacro:macro>
+</robot>

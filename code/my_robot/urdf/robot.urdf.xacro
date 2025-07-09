@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="my_robot">
+  <!-- 动态定位宏文件路径 -->
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/robot_body.urdf.xacro" />
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/robot_whell.urdf.xacro"/>
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/robot_arm_base.urdf.xacro"/>
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/robot_arm_1.urdf.xacro" />
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/sphere.urdf.xacro" />
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/robot_arm_2.urdf.xacro"/>
+  <xacro:include filename="/home/sui/livox_mid360/src/my_robot/urdf/lader.urdf.xacro"/>
+
+  
+  <!-- 实例化机器人并传入参数 -->
+  <xacro:rectangle_robot 
+      robot_name="base_link" 
+      length_para="0.5" 
+      width_para="0.3" 
+      height_para="0.1" 
+      mass_para="2.0"
+  />
+
+
+    <!-- 安装1左轮 -->
+    <xacro:wheel_module 
+    radius="0.05" 
+    name="left_wheel1" 
+    width="0.03" 
+    parent_link="base_link"
+     >
+    
+    <origin xyz="0.17 0.16 -0.05" rpy="0 0 0"/> 
+    </xacro:wheel_module>
+
+    <!-- 安装2左轮 -->
+    <xacro:wheel_module 
+    radius="0.05" 
+    name="left_wheel2" 
+    width="0.03" 
+    parent_link="base_link"
+     > 
+    
+    <origin xyz="-0.17 0.16 -0.05" rpy="0 0 0"/> 
+    </xacro:wheel_module>
+
+
+    <!-- 安装1右边轮 -->
+    <xacro:wheel_module 
+    radius="0.05" 
+    name="right_wheel1" 
+    width="0.03" 
+    parent_link="base_link"
+     > 
+    
+    <origin xyz="0.17 -0.16 -0.05" rpy="0 0 0"/> 
+    </xacro:wheel_module>
+
+    <!-- 安装2右轮 -->
+    <xacro:wheel_module 
+    radius="0.05" 
+    name="right_wheel2" 
+    width="0.03" 
+    parent_link="base_link"
+    >  
+    <origin xyz="-0.17 -0.16 -0.05" rpy="0 0 0"/> 
+    </xacro:wheel_module>
+
+    <!--安装机械臂底座  -->
+     <xacro:fixed_square_module 
+      module_name="arm_base" 
+      side_length="0.2" 
+      height="0.01" 
+      parent="base_link">
+      <origin xyz="-0.05 0 0.05" rpy="0 0 0"/>
+    </xacro:fixed_square_module>
+
+  <xacro:sphere_link name="marker" parent="arm_base" radius="0.12">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:sphere_link>
+
+   <!-- 安装机械臂下臂 -->
+  <xacro:square_base_pillar name="arm1" base_length="0.15" height="0.25" parent_link="marker">
+    <origin xyz="0 0 0.075" rpy="0 1.5708 0" />
+  </xacro:square_base_pillar>
+
+  <!-- name parent height base_side *origin color_rgba:=0.7 0.7 0.7 1" -->
+  <xacro:square_base_box name="arm2" parent="arm1" height="0.3" base_side="0.1" >  <!--拉伸最长为0.2-->
+    <origin xyz="0 0 0" rpy="0 0.0 0"/>
+  </xacro:square_base_box>
+
+  <xacro:sphere_radar name="lader" radius="0.05" parent="base_link">
+    <origin xyz="0.25 0 0" rpy="0 1.5708 0"/>  <!-- 安装位置示例 -->
+  </xacro:sphere_radar>
+</robot>

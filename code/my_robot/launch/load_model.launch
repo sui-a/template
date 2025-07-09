@@ -1,0 +1,16 @@
+<launch>
+  <!-- 1. 加载Xacro文件到参数服务器 -->
+  <param name="robot_description" 
+         command="$(find xacro)/xacro --inorder '/home/sui/livox_mid360/src/my_robot/urdf/your_model.xacro'" />
+
+  <!-- 2. 启动Gazebo空世界 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- 3. 在Gazebo中生成模型 -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-urdf -model my_car -param robot_description -x 0 -y 0 -z 0" />
+</launch>
